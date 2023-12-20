@@ -35,3 +35,5 @@ helpdesk/public/desk
 helpdesk/public/node_modules
 helpdesk/www/helpdesk/index.html
 desk/components.d.ts
+
+.idea/*
