@@ -34,7 +34,7 @@ def get_filterable_fields(doctype):
 			QBDocField.options,
 		)
 		.where(QBDocField.parent == doctype)
-		.where(QBDocField.hidden == False)
+		.where(QBDocField.hidden == 0)
 		.where(Criterion.any([QBDocField.fieldtype == i for i in allowed_fieldtypes]))
 		.run(as_dict=True)
 	)
@@ -49,7 +49,7 @@ def get_filterable_fields(doctype):
 			QBCustomField.options,
 		)
 		.where(QBCustomField.dt == doctype)
-		.where(QBCustomField.hidden == False)
+		.where(QBCustomField.hidden == 0)
 		.where(
 			Criterion.any([QBCustomField.fieldtype == i for i in allowed_fieldtypes])
 		)

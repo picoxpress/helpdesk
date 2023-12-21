@@ -262,9 +262,9 @@ class HDServiceLevelAgreement(Document):
 				continue
 			today_workday = workdays[today_weekday]
 			now_in_seconds = time_diff_in_seconds(today, today_day)
-			start_time = max(today_workday.start_time.total_seconds(), now_in_seconds)
+			start_time = max(to_timedelta(today_workday.start_time).total_seconds(), now_in_seconds)
 			till_start_time = max(start_time - now_in_seconds, 0)
-			end_time = max(today_workday.end_time.total_seconds(), now_in_seconds)
+			end_time = max(to_timedelta(today_workday.end_time).total_seconds(), now_in_seconds)
 			time_left = max(end_time - start_time, 0)
 			if not time_left:
 				res = getdate(add_to_date(res, days=1, as_datetime=True))
