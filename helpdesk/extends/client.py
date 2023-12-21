@@ -10,7 +10,6 @@ from frappe.model.base_document import get_controller
 from frappe.query_builder.functions import Count
 from frappe.utils import get_user_info_for_avatar
 from frappe.utils.caching import redis_cache
-from frappe.utils import get_table_name
 
 from helpdesk.utils import check_permissions
 
@@ -71,7 +70,7 @@ def get_list_meta(
 	query = frappe.qb.get_query(
 		table=doctype,
 		filters=filters,
-		group_by=group_by if group_by is not None else "{}.name".format(get_table_name(doctype)),
+		group_by=group_by if group_by is not None else "name",
 		fields=["name"],
 	)
 

@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_import": 1,
- "autoname": "format:PXT-{MM}-{YY}-####",
+ "autoname": "format:PXT-{MM}-{YY}-{####}",
  "creation": "2022-03-02 03:10:19.254460",
  "doctype": "DocType",
  "document_type": "Setup",
