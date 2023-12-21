@@ -1,6 +1,6 @@
 {
  "actions": [],
- "autoname": "autoincrement",
+ "autoname": "hash",
  "creation": "2022-11-05 21:27:43.325341",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -25,7 +25,7 @@
  "modified_by": "Administrator",
  "module": "Helpdesk",
  "name": "HD Team Item",
- "naming_rule": "Autoincrement",
+ "naming_rule": "Random",
  "owner": "Administrator",
  "permissions": [],
  "sort_field": "modified",

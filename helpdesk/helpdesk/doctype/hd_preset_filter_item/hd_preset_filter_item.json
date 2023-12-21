@@ -1,6 +1,6 @@
 {
  "actions": [],
- "autoname": "autoincrement",
+ "autoname": "hash",
  "creation": "2022-11-07 19:52:30.983020",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -45,7 +45,7 @@
  "modified_by": "Administrator",
  "module": "Helpdesk",
  "name": "HD Preset Filter Item",
- "naming_rule": "Autoincrement",
+ "naming_rule": "Random",
  "owner": "Administrator",
  "permissions": [],
  "sort_field": "modified",

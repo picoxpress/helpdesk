@@ -1,6 +1,6 @@
 {
  "actions": [],
- "autoname": "autoincrement",
+ "autoname": "format:PXTM-####",
  "creation": "2022-12-22 16:29:33.679680",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -25,7 +25,7 @@
  "modified_by": "Administrator",
  "module": "Helpdesk",
  "name": "HD Team Member",
- "naming_rule": "Autoincrement",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [],
  "sort_field": "modified",
