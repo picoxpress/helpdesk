@@ -308,9 +308,9 @@ class HDServiceLevelAgreement(Document):
 				start_at = getdate(add_to_date(start_at, days=1, as_datetime=True))
 				continue
 			now_in_seconds = time_diff_in_seconds(today, today_day)
-			start_time = max(today_workday.start_time.total_seconds(), now_in_seconds)
+			start_time = max(to_timedelta(today_workday.start_time).total_seconds(), now_in_seconds)
 			end_at_seconds = time_diff_in_seconds(getdate(end_at), end_at)
-			end_time = max(today_workday.end_time.total_seconds(), end_at_seconds)
+			end_time = max(to_timedelta(today_workday.end_time).total_seconds(), end_at_seconds)
 			time_taken = end_time - start_time
 			time_took += time_taken
 			start_at = getdate(add_to_date(start_at, days=1, as_datetime=True))
