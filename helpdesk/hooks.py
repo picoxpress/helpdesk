@@ -7,6 +7,7 @@ app_color = "grey"
 app_email = "hello@frappe.io"
 app_license = "AGPLv3"
 
+app_include_js = "helpdesk.bundle.js"
 before_install = "helpdesk.setup.install.before_install"
 after_install = "helpdesk.setup.install.after_install"
 
