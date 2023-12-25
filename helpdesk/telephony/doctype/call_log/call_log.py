@@ -4,15 +4,21 @@
 
 import frappe
 from frappe import _
-from frappe.contacts.doctype.contact.contact import get_contact_with_phone_number
 from frappe.core.doctype.dynamic_link.dynamic_link import deduplicate_dynamic_links
 from frappe.model.document import Document
 
-from erpnext.crm.doctype.lead.lead import get_lead_with_phone_number
-from erpnext.crm.doctype.utils import get_scheduled_employees_for_popup, strip_number
-
 END_CALL_STATUSES = ["No Answer", "Completed", "Busy", "Failed"]
 ONGOING_CALL_STATUSES = ["Ringing", "In Progress"]
+
+def strip_number(number):
+	if not number:
+		return
+	# strip + and 0 from the start of the number for proper number comparisions
+	# eg. +7888383332 should match with 7888383332
+	# eg. 07888383332 should match with 7888383332
+	number = number.lstrip("+")
+	number = number.lstrip("0")
+	return number
 
 
 class CallLog(Document):
@@ -20,18 +26,6 @@ class CallLog(Document):
 		deduplicate_dynamic_links(self)
 
 	def before_insert(self):
-		"""Add lead(third party person) links to the document."""
-		lead_number = self.get("from") if self.is_incoming_call() else self.get("to")
-		lead_number = strip_number(lead_number)
-
-		contact = get_contact_with_phone_number(strip_number(lead_number))
-		if contact:
-			self.add_link(link_type="Contact", link_name=contact)
-
-		lead = get_lead_with_phone_number(lead_number)
-		if lead:
-			self.add_link(link_type="Lead", link_name=lead)
-
 		# Add Employee Name
 		if self.is_incoming_call():
 			self.update_received_by()
@@ -43,7 +37,7 @@ class CallLog(Document):
 		def _is_call_missed(doc_before_save, doc_after_save):
 			# FIXME: This works for Exotel but not for all telepony providers
 			return (
-				doc_before_save.to != doc_after_save.to and doc_after_save.status not in END_CALL_STATUSES
+					doc_before_save.to != doc_after_save.to and doc_after_save.status not in END_CALL_STATUSES
 			)
 
 		def _is_call_ended(doc_before_save, doc_after_save):
@@ -71,38 +65,29 @@ class CallLog(Document):
 
 	def trigger_call_popup(self):
 		if self.is_incoming_call():
-			scheduled_employees = get_scheduled_employees_for_popup(self.medium)
 			employees = get_employees_with_number(self.to)
-			employee_emails = [employee.get("user_id") for employee in employees]
-
-			# check if employees with matched number are scheduled to receive popup
-			emails = set(scheduled_employees).intersection(employee_emails)
+			employee_emails = [employee.get("user") for employee in employees]
 
 			if frappe.conf.developer_mode:
 				self.add_comment(
 					text=f"""
-					Scheduled Employees: {scheduled_employees}
 					Matching Employee: {employee_emails}
-					Show Popup To: {emails}
+					Show Popup To: {employee_emails}
 				"""
 				)
 
-			if employee_emails and not emails:
-				self.add_comment(text=_("No employee was scheduled for call popup"))
-
-			for email in emails:
+			for email in employee_emails:
 				frappe.publish_realtime("show_call_popup", self, user=email)
 
 	def update_received_by(self):
 		if employees := get_employees_with_number(self.get("to")):
 			self.call_received_by = employees[0].get("name")
-			self.agent_user_id = employees[0].get("user_id")
+			self.agent_user_id = employees[0].get("user")
 
 
 @frappe.whitelist()
-def add_call_summary_and_call_type(call_log, summary, call_type):
+def add_call_summary_and_call_type(call_log, summary):
 	doc = frappe.get_doc("Call Log", call_log)
-	doc.type_of_call = call_type
 	doc.save()
 	doc.add_comment("Comment", frappe.bold(_("Call Summary")) + "<br><br>" + summary)
 
@@ -117,9 +102,9 @@ def get_employees_with_number(number):
 		return employee_doc_name_and_emails
 
 	employee_doc_name_and_emails = frappe.get_all(
-		"Employee",
-		filters={"cell_number": ["like", f"%{number}%"], "user_id": ["!=", ""]},
-		fields=["name", "user_id"],
+		"HD Agent",
+		filters={"cell_number": ["like", f"%{number}%"], "user": ["!=", ""]},
+		fields=["name", "user"],
 	)
 
 	frappe.cache().hset("employees_with_number", number, employee_doc_name_and_emails)

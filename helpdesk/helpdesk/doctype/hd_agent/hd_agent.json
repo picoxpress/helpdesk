@@ -10,7 +10,8 @@
   "agent_name",
   "user_image",
   "is_active",
-  "groups"
+  "groups",
+  "cell_number"
  ],
  "fields": [
   {
@@ -47,6 +48,12 @@
    "fieldtype": "Data",
    "label": "Image",
    "read_only": 1
+  },
+  {
+   "fieldname": "cell_number",
+   "fieldtype": "Data",
+   "label": "Cell Number",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,

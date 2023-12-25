@@ -22,7 +22,6 @@
   "recording_url",
   "recording_html",
   "section_break_11",
-  "type_of_call",
   "summary",
   "section_break_19",
   "links"
@@ -145,12 +144,6 @@
    "hidden": 1,
    "label": "Agent User Id",
    "options": "User"
-  },
-  {
-   "fieldname": "type_of_call",
-   "fieldtype": "Link",
-   "label": "Type Of Call",
-   "options": "Telephony Call Type"
   },
   {
    "depends_on": "to",

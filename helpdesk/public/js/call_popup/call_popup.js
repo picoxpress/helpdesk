@@ -1,3 +1,5 @@
+frappe.provide("helpdesk");
+
 class CallPopup {
 	constructor(call_log) {
 		this.caller_number = call_log.from;
@@ -60,7 +62,7 @@ class CallPopup {
 
 	close_modal() {
 		this.dialog.hide();
-		delete erpnext.call_popup;
+		delete helpdesk.call_popup;
 	}
 
 	call_ended(call_log, missed) {
@@ -110,26 +112,6 @@ class CallPopup {
 				'fieldtype': 'Data',
 				'read_only': 1
 			}, {
-				'fieldtype': 'Button',
-				'label': __('Open Contact'),
-				'click': () => frappe.set_route('Form', 'Contact', this.get_contact_link().link_name),
-				'depends_on': () => this.get_caller_name()
-			}, {
-				'fieldtype': 'Button',
-				'label': __('Create New Contact'),
-				'click': this.create_new_contact.bind(this),
-				'depends_on': () => !this.get_caller_name()
-			}, {
-				'fieldtype': 'Button',
-				'label': __('Create New Customer'),
-				'click': this.create_new_customer.bind(this),
-				'depends_on': () => !this.get_caller_name()
-			}, {
-				'fieldtype': 'Button',
-				'label': __('Create New Lead'),
-				'click': () => frappe.new_doc('Lead', { 'mobile_no': this.caller_number }),
-				'depends_on': () => !this.get_caller_name()
-			}, {
 				'fieldtype': 'Column Break',
 			}, {
 				'fieldname': 'number',
@@ -140,11 +122,6 @@ class CallPopup {
 			}, {
 				'fieldtype': 'Section Break',
 				'hide_border': 1,
-			}, {
-				'fieldname': 'call_type',
-				'label': 'Call Type',
-				'fieldtype': 'Link',
-				'options': 'Telephony Call Type',
 			}, {
 				'fieldtype': 'Section Break',
 				'hide_border': 1,
@@ -157,12 +134,10 @@ class CallPopup {
 				'label': __('Save'),
 				'click': () => {
 					const call_summary = this.call_details.get_value('call_summary');
-					const call_type = this.call_details.get_value('call_type');
 					if (!call_summary) return;
-					frappe.xcall('erpnext.telephony.doctype.call_log.call_log.add_call_summary_and_call_type', {
+					frappe.xcall('helpdesk.telephony.doctype.call_log.call_log.add_call_summary_and_call_type', {
 						'call_log': this.call_log.name,
 						'summary': call_summary,
-						'call_type': call_type,
 					}).then(() => {
 						this.close_modal();
 						frappe.show_alert({
@@ -208,12 +183,12 @@ class CallPopup {
 
 $(document).on('app_ready', function () {
 	frappe.realtime.on('show_call_popup', call_log => {
-		let call_popup = erpnext.call_popup;
+		let call_popup = helpdesk.call_popup;
 		if (call_popup && call_log.name === call_popup.call_log.name) {
 			call_popup.update_call_log(call_log);
 			call_popup.dialog.show();
 		} else {
-			erpnext.call_popup = new CallPopup(call_log);
+			helpdesk.call_popup = new CallPopup(call_log);
 		}
 	});
 });
