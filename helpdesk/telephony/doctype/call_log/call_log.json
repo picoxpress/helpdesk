@@ -10,7 +10,7 @@
   "from",
   "to",
   "call_received_by",
-  "employee_user_id",
+  "agent_user_id",
   "medium",
   "start_time",
   "end_time",
@@ -130,8 +130,8 @@
   {
    "fieldname": "customer",
    "fieldtype": "Link",
-   "label": "Customer",
-   "options": "Customer",
+   "label": "HD Customer",
+   "options": "HD Customer",
    "read_only": 1
   },
   {
@@ -140,10 +140,10 @@
    "label": "Call Details"
   },
   {
-   "fieldname": "employee_user_id",
+   "fieldname": "agent_user_id",
    "fieldtype": "Link",
    "hidden": 1,
-   "label": "Employee User Id",
+   "label": "Agent User Id",
    "options": "User"
   },
   {
@@ -157,7 +157,7 @@
    "fieldname": "call_received_by",
    "fieldtype": "Link",
    "label": "Call Received By",
-   "options": "Employee",
+   "options": "HD Agent",
    "read_only": 1
   }
  ],
