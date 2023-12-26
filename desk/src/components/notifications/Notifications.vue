@@ -69,6 +69,7 @@ import { useSidebarStore } from "@/stores/sidebar";
 import { useNotificationStore } from "@/stores/notification";
 import { UserAvatar } from "@/components";
 import NotificationsMention from "./NotificationsMention.vue";
+import NotificationsAssignment from "./NotificationsAssignment.vue";
 
 const notificationStore = useNotificationStore();
 const sidebarStore = useSidebarStore();
@@ -83,12 +84,22 @@ function getBody(n: Notification) {
   switch (n.notification_type) {
     case "Mention":
       return NotificationsMention;
+    case "Assignment":
+      return NotificationsAssignment;
   }
 }
 
 function getRoute(n: Notification) {
   switch (n.notification_type) {
     case "Mention":
+      return {
+        name: "TicketAgent",
+        params: {
+          ticketId: n.reference_ticket,
+        },
+        hash: "#" + n.reference_comment,
+      };
+    case "Assignment":
       return {
         name: "TicketAgent",
         params: {

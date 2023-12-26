@@ -11,6 +11,10 @@ class HDNotification(Document):
 			if self.reference_comment:
 				return f"{user_from} mentioned you in a comment"
 			return f"{user_from} mentioned you"
+		if self.notification_type == "Assignment":
+			if self.reference_ticket:
+				return f"{self.reference_ticket} ticket got assigned to you"
+			return f"{user_from} assigned you a ticket"
 		return ""
 
 	def get_from(self):
@@ -21,6 +25,8 @@ class HDNotification(Document):
 	def get_button_label(self):
 		if self.reference_comment:
 			return "See Comment"
+		if self.reference_ticket:
+			return "View Ticket"
 		return "Visit"
 
 	def get_url(self):
@@ -38,11 +44,17 @@ class HDNotification(Document):
 				"button_label": self.get_button_label(),
 				"callback_url": self.get_url(),
 			}
+		if self.notification_type == "Assignment":
+			return {
+				"title": self.format_message(),
+				"button_label": self.get_button_label(),
+				"callback_url": self.get_url(),
+			}
 
 	def after_insert(self):
 		frappe.sendmail(
 			recipients=self.user_to,
-			subject="New notification",
+			subject="New notification from PicoXpress Support",
 			message=self.format_message(),
 			template="notification",
 			args=self.get_args(),

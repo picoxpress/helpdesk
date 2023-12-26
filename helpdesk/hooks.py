@@ -25,6 +25,9 @@ doc_events = {
 	"Assignment Rule": {
 		"on_trash": "helpdesk.overrides.on_assignment_rule_trash",
 	},
+	"ToDo": {
+		"on_update": "helpdesk.helpdesk.hooks.hd_notification.handle_todo_entry"
+	}
 }
 
 has_permission = {

@@ -97,9 +97,9 @@ socket.on("helpdesk:new-ticket", () => {
 
 const columns = [
   {
-    label: "#",
+    label: "Ticket #",
     key: "name",
-    width: "w-25",
+    width: "w-24",
     text: "text-sm",
   },
   {
