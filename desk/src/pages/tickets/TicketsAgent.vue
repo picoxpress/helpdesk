@@ -99,7 +99,7 @@ const columns = [
   {
     label: "Ticket #",
     key: "name",
-    width: "w-24",
+    width: "w-28",
     text: "text-sm",
   },
   {
