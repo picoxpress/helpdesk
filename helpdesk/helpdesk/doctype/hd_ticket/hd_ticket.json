@@ -15,6 +15,7 @@
   "priority",
   "cb00",
   "ticket_type",
+  "ticket_source",
   "agent_group",
   "ticket_split_from",
   "sb_details",
@@ -46,6 +47,7 @@
   "contact",
   "customer",
   "email_account",
+  "call_log",
   "column_break_16",
   "via_customer_portal",
   "attachment",
@@ -375,6 +377,22 @@
    "fieldname": "feedback_text",
    "fieldtype": "Data",
    "label": "Feedback (Text)"
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "default": "Portal",
+   "fieldname": "ticket_source",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Ticket Source",
+   "options": "Email\nTelephony\nPortal",
+   "reqd": 1
+  },
+  {
+   "fieldname": "call_log",
+   "fieldtype": "Link",
+   "label": "Call Log",
+   "options": "Call Log"
   }
  ],
  "icon": "fa fa-issue",

@@ -1,9 +1,9 @@
 import frappe
 import requests
 
-# api/method/erpnext.erpnext_integrations.exotel_integration.handle_incoming_call
-# api/method/erpnext.erpnext_integrations.exotel_integration.handle_end_call
-# api/method/erpnext.erpnext_integrations.exotel_integration.handle_missed_call
+# api/method/helpdesk.integrations.exotel_integration.handle_incoming_call
+# api/method/helpdesk.integrations.exotel_integration.handle_end_call
+# api/method/helpdesk.integrations.exotel_integration.handle_missed_call
 
 
 @frappe.whitelist(allow_guest=True)
@@ -20,9 +20,9 @@ def handle_incoming_call(**kwargs):
 
         call_log = get_call_log(call_payload)
         if not call_log:
-            create_call_log(call_payload)
+            return create_call_log(call_payload)
         else:
-            update_call_log(call_payload, call_log=call_log)
+            return update_call_log(call_payload, call_log=call_log)
     except Exception as e:
         frappe.db.rollback()
         exotel_settings.log_error("Error in Exotel incoming call")
@@ -62,8 +62,23 @@ def update_call_log(call_payload, status="Ringing", call_log=None):
         call_log.duration = call_payload.get("DialCallDuration") or 0
         call_log.recording_url = call_payload.get("RecordingUrl")
         call_log.save(ignore_permissions=True)
+        if status != "Ringing":
+            ticket = get_ticket_for_call_log(call_payload.get("CallSid"))
+            ticket.new_comment("Status of the Call - {}<br>Duration of the Call: {} Seconds<br>Recording URL: {}".format(status, call_log.duration, call_payload.get("RecordingUrl") or "Not Found"), True)
+            ticket.save(ignore_permissions=True)
+            frappe.db.commit()
         frappe.db.commit()
         return call_log
+
+def get_ticket_for_call_log(call_log_id):
+    QBTicket = frappe.qb.DocType("HD Ticket")
+    ticket = frappe.qb.from_(QBTicket).select(
+        QBTicket.name
+    ).where(
+        QBTicket.call_log == call_log_id
+    ).limit(1).run(as_dict = True)
+    if (len(ticket) > 0):
+        return frappe.get_doc("HD Ticket", ticket[0].name)
 
 
 def get_call_log(call_payload):
@@ -80,9 +95,22 @@ def create_call_log(call_payload):
     call_log.status = "Ringing"
     setattr(call_log, "from", call_payload.get("CallFrom"))
     call_log.save(ignore_permissions=True)
+    create_helpdesk_ticket(call_log, "Call From: {}".format(call_payload.get("CallFrom")))
     frappe.db.commit()
     return call_log
 
+def create_helpdesk_ticket(call_log, subject, description=""):
+    ticket = frappe.new_doc("HD Ticket")
+    ticket.description = description
+    ticket.subject = subject
+    ticket.call_log = call_log
+    ticket.ticket_source = 'Telephony'
+    agents = get_agents_with_number(call_log.to)
+    ticket.save(ignore_permissions=True)
+    if (len(agents) > 0):
+        ticket.assign_agent(agents[0].user, True)
+    frappe.db.commit()
+    return ticket
 
 @frappe.whitelist()
 def get_call_status(call_id):
@@ -130,3 +158,32 @@ def get_exotel_endpoint(action):
     return "https://{api_key}:{api_token}@api.exotel.com/v1/Accounts/{sid}/{action}".format(
         api_key=settings.api_key, api_token=settings.api_token, sid=settings.account_sid, action=action
     )
+
+def get_agents_with_number(number):
+    number = strip_number(number)
+    if not number:
+        return []
+
+    employee_doc_name_and_emails = frappe.cache().hget("employees_with_number", number)
+    if employee_doc_name_and_emails:
+        return employee_doc_name_and_emails
+
+    employee_doc_name_and_emails = frappe.get_all(
+        "HD Agent",
+        filters={"cell_number": ["like", f"%{number}%"], "user": ["!=", ""]},
+        fields=["name", "user"],
+    )
+
+    frappe.cache().hset("employees_with_number", number, employee_doc_name_and_emails)
+
+    return employee_doc_name_and_emails
+
+def strip_number(number):
+    if not number:
+        return
+    # strip + and 0 from the start of the number for proper number comparisions
+    # eg. +7888383332 should match with 7888383332
+    # eg. 07888383332 should match with 7888383332
+    number = number.lstrip("+")
+    number = number.lstrip("0")
+    return number

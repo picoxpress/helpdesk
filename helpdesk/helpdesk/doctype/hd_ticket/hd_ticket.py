@@ -80,7 +80,7 @@ class HDTicket(Document):
 				QBTicket.contact == user,
 				QBTicket.customer == customer,
 				QBTicket.raised_by == user,
-			]
+				]
 			if not is_agent()
 			else []
 		)
@@ -109,7 +109,7 @@ class HDTicket(Document):
 		)
 
 		can_ignore_restrictions = (
-			len(list(filter(lambda x: x.ignore_restrictions, teams))) > 0
+				len(list(filter(lambda x: x.ignore_restrictions, teams))) > 0
 		)
 
 		if can_ignore_restrictions:
@@ -218,9 +218,9 @@ class HDTicket(Document):
 		if self.priority:
 			return
 		self.priority = (
-			frappe.get_cached_value("HD Ticket Type", self.ticket_type, "priority")
-			or frappe.get_cached_value("HD Settings", "HD Settings", "default_priority")
-			or DEFAULT_TICKET_PRIORITY
+				frappe.get_cached_value("HD Ticket Type", self.ticket_type, "priority")
+				or frappe.get_cached_value("HD Settings", "HD Settings", "default_priority")
+				or DEFAULT_TICKET_PRIORITY
 		)
 
 	def set_feedback_values(self):
@@ -237,10 +237,10 @@ class HDTicket(Document):
 
 	def validate_feedback(self):
 		if (
-			self.feedback
-			or self.status != "Resolved"
-			or not self.has_value_changed("status")
-			or is_agent()
+				self.feedback
+				or self.status != "Resolved"
+				or not self.has_value_changed("status")
+				or is_agent()
 		):
 			return
 		frappe.throw(
@@ -289,8 +289,8 @@ class HDTicket(Document):
 		if self.has_value_changed("agent_group") and self.status == "Open":
 			current_assigned_agent_doc = self.get_assigned_agent()
 			if (
-				current_assigned_agent_doc
-				and not current_assigned_agent_doc.in_group(self.agent_group)
+					current_assigned_agent_doc
+					and not current_assigned_agent_doc.in_group(self.agent_group)
 			) and frappe.get_doc(
 				"Assignment Rule",
 				frappe.get_doc("HD Team", self.agent_group).assignment_rule,
@@ -323,7 +323,7 @@ class HDTicket(Document):
 		communication.save(ignore_permissions=True)
 
 	@frappe.whitelist()
-	def assign_agent(self, agent):
+	def assign_agent(self, agent, ignore_permissions: bool = False):
 		if not agent:
 			return
 
@@ -335,7 +335,7 @@ class HDTicket(Document):
 					return
 
 		clear_all_assignments("HD Ticket", self.name)
-		assign({"assign_to": [agent], "doctype": "HD Ticket", "name": self.name})
+		assign({"assign_to": [agent], "doctype": "HD Ticket", "name": self.name}, ignore_permissions=ignore_permissions)
 		publish_event("helpdesk:ticket-assignee-update", {"name": self.name})
 
 	def get_assigned_agent(self):
@@ -367,7 +367,7 @@ class HDTicket(Document):
 
 	def instantly_send_email(self):
 		check: str = (
-			frappe.get_value("HD Settings", None, "instantly_send_email") or "0"
+				frappe.get_value("HD Settings", None, "instantly_send_email") or "0"
 		)
 
 		return bool(int(check))
@@ -421,8 +421,8 @@ class HDTicket(Document):
 		return f"{root_uri}/helpdesk/my-tickets/{self.name}"
 
 	@frappe.whitelist()
-	def new_comment(self, content: str):
-		if not is_agent():
+	def new_comment(self, content: str, skip_permission: bool = False):
+		if not is_agent() and not skip_permission:
 			frappe.throw(
 				_("You are not permitted to add a comment"), frappe.PermissionError
 			)
@@ -431,11 +431,11 @@ class HDTicket(Document):
 		c.content = content
 		c.is_pinned = False
 		c.reference_ticket = self.name
-		c.save()
+		c.save(ignore_permissions = skip_permission)
 
 	@frappe.whitelist()
 	def reply_via_agent(
-		self, message: str, cc: str = None, bcc: str = None, attachments: List[str] = []
+			self, message: str, cc: str = None, bcc: str = None, attachments: List[str] = []
 	):
 		skip_email_workflow = self.skip_email_workflow()
 		medium = "" if skip_email_workflow else "Email"
@@ -702,7 +702,7 @@ class HDTicket(Document):
 		self.assign_agent(escalation_rule.to_agent)
 
 	def set_sla(self):
-		if sla := get_sla(self):
+		if sla := get_sla(self, skip_permissions=True):
 			self.sla = sla.name
 
 	def apply_sla(self):
@@ -719,7 +719,7 @@ class HDTicket(Document):
 			self.status = "Replied"
 			# Set first response time. This must be set only once
 			self.first_responded_on = (
-				self.first_responded_on or frappe.utils.now_datetime()
+					self.first_responded_on or frappe.utils.now_datetime()
 			)
 		# Fetch description from communication if not set already. This might not be needed
 		# anymore as a communication is created when a ticket is created.
@@ -733,9 +733,9 @@ class HDTicket(Document):
 # is being called from hooks. `doc` is the ticket to check against
 def has_permission(doc, user=None):
 	return (
-		doc.contact == user
-		or doc.raised_by == user
-		or doc.owner == user
-		or doc.customer == get_customer(user)
-		or is_agent(user)
+			doc.contact == user
+			or doc.raised_by == user
+			or doc.owner == user
+			or doc.customer == get_customer(user)
+			or is_agent(user)
 	)

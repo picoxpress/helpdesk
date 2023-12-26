@@ -7,6 +7,8 @@ from frappe import _
 from frappe.core.doctype.dynamic_link.dynamic_link import deduplicate_dynamic_links
 from frappe.model.document import Document
 
+from helpdesk.utils import publish_event
+
 END_CALL_STATUSES = ["No Answer", "Completed", "Busy", "Failed"]
 ONGOING_CALL_STATUSES = ["Ringing", "In Progress"]
 
@@ -78,6 +80,7 @@ class CallLog(Document):
 
 			for email in employee_emails:
 				frappe.publish_realtime("show_call_popup", self, user=email)
+				publish_event("helpdesk:trigger-call-popup", self)
 
 	def update_received_by(self):
 		if employees := get_employees_with_number(self.get("to")):

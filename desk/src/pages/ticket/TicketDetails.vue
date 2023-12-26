@@ -72,7 +72,7 @@
           <div class="space-y-1.5">
             <span class="block text-sm text-gray-700">Source</span>
             <span class="block break-words font-medium text-gray-900">
-              {{ ticket.data.via_customer_portal ? "Portal" : "Mail" }}
+              {{ ticket.data.ticket_source }}
             </span>
           </div>
           <div v-if="data.feedback_rating" class="space-y-1.5">
