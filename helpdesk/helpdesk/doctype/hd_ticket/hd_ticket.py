@@ -335,7 +335,7 @@ class HDTicket(Document):
 					return
 
 		clear_all_assignments("HD Ticket", self.name)
-		assign({"assign_to": [agent], "doctype": "HD Ticket", "name": self.name}, ignore_permissions=ignore_permissions)
+		assign({"assign_to": [agent], "doctype": "HD Ticket", "name": self.name, "assigned_by": "Administrator" if ignore_permissions else None}, ignore_permissions=ignore_permissions)
 		publish_event("helpdesk:ticket-assignee-update", {"name": self.name})
 
 	def get_assigned_agent(self):
