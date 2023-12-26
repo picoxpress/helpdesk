@@ -9,14 +9,15 @@ from helpdesk.utils import check_permissions, get_context
 DOCTYPE = "HD Service Level Agreement"
 
 
-def get_sla(ticket: Document) -> Document:
+def get_sla(ticket: Document, skip_permissions: bool = False) -> Document:
 	"""
 	Get Service Level Agreement for `ticket`
 
 	:param doc: Ticket to use
 	:return: Applicable SLA
 	"""
-	check_permissions(DOCTYPE, None)
+	if not skip_permissions:
+		check_permissions(DOCTYPE, None)
 	QBSla = frappe.qb.DocType(DOCTYPE)
 	QBPriority = frappe.qb.DocType("HD Service Level Priority")
 	now = now_datetime()

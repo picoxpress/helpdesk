@@ -71,7 +71,7 @@ const tickets = createListManager({
         outgoing: d.count_msg_outgoing,
         comments: d.count_comment,
       };
-      d.source = d.via_customer_portal ? "Customer portal" : "Email";
+      d.source = d.ticket_source;
     }
     return data;
   },
@@ -99,7 +99,7 @@ const columns = [
   {
     label: "#",
     key: "name",
-    width: "w-10",
+    width: "w-25",
     text: "text-sm",
   },
   {
