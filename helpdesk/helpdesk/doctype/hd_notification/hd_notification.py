@@ -52,13 +52,14 @@ class HDNotification(Document):
 			}
 
 	def after_insert(self):
-		frappe.sendmail(
-			recipients=self.user_to,
-			subject="New notification from PicoXpress Support",
-			message=self.format_message(),
-			template="notification",
-			args=self.get_args(),
-		)
+		if self.notification_type != "Assignment":
+			frappe.sendmail(
+				recipients=self.user_to,
+				subject="New notification from PicoXpress Support",
+				message=self.format_message(),
+				template="notification",
+				args=self.get_args(),
+			)
 
 	def on_update(self):
 		refetch_resource("Notifications")
