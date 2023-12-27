@@ -145,11 +145,11 @@ const options = computed(() => [
     label: "Priority",
     store: useTicketPriorityStore(),
   },
-  {
-    field: "agent_group",
-    label: "Team",
-    store: useTeamStore(),
-  },
+  // {
+  //   field: "agent_group",
+  //   label: "Team",
+  //   store: useTeamStore(),
+  // },
 ]);
 
 function update(fieldname: string, value: string) {

@@ -165,6 +165,7 @@ class HDTicket(Document):
 		self.set_contact()
 		self.set_customer()
 		self.set_priority()
+		self.assign_team()
 		self.set_feedback_values()
 		self.apply_escalation_rule()
 		self.set_sla()
@@ -371,6 +372,18 @@ class HDTicket(Document):
 		)
 
 		return bool(int(check))
+
+	def assign_team(self):
+		if (self.agent_group):
+			return
+		agent_group = None
+		if self.ticket_source == 'Email':
+			email_account_doc = frappe.get_doc("Email Account", self.email_account)
+			agent_group = email_account_doc.hd_team
+		if self.ticket_source == 'Telephony':
+			agent_group = "Customer Support" # Current we only have telephony for them.
+		if agent_group:
+			self.agent_group = agent_group
 
 	@frappe.whitelist()
 	def get_last_communication(self):

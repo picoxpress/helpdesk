@@ -4,7 +4,10 @@
     <div v-if="template.data?.about" class="mx-5 my-3">
       <div class="prose-f" v-html="sanitize(template.data.about)" />
     </div>
-    <div class="grid grid-cols-1 gap-4 px-5 sm:grid-cols-3">
+    <div
+      class="grid grid-cols-1 gap-4 p-5 sm:grid-cols-3"
+      style="margin-top: 1.25rem"
+    >
       <UniInput
         v-for="field in visibleFields"
         :key="field.fieldname"
