@@ -379,7 +379,7 @@ class HDTicket(Document):
 		agent_group = None
 		if self.ticket_source == 'Email':
 			email_account_doc = frappe.get_doc("Email Account", self.email_account)
-			agent_group = email_account_doc.hd_team
+			agent_group = email_account_doc.custom_hd_team
 		if self.ticket_source == 'Telephony':
 			agent_group = "Customer Support" # Current we only have telephony for them.
 		if agent_group:
