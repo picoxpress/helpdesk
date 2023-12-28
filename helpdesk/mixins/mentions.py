@@ -24,9 +24,12 @@ class HasMentions:
 			if values.user_from == values.user_to:
 				continue
 			# Only comment (in tickets) has mentions as of now
+			notification = frappe.new_doc("HD Notification")
+			notification.user_from=self.owner
+			notification.user_to=mention.email
+			notification.notification_type="Mention"
 			if self.doctype == "HD Ticket Comment":
-				values.reference_comment = self.name
-				values.reference_ticket = self.reference_ticket
-			if frappe.db.exists("HD Notification", values):
-				return
-			frappe.get_doc(values).insert()
+				notification.reference_comment = self.name
+				notification.reference_ticket = self.reference_ticket
+			notification.save(ignore_permissions=True)
+			frappe.db.commit()
