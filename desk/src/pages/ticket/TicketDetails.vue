@@ -135,11 +135,11 @@ const ticket = inject(ITicket);
 const data = computed(() => ticket.data);
 
 const options = computed(() => [
-  {
-    field: "ticket_type",
-    label: "Ticket type",
-    store: useTicketTypeStore(),
-  },
+  // {
+  //   field: "ticket_type",
+  //   label: "Ticket type",
+  //   store: useTicketTypeStore(),
+  // },
   {
     field: "priority",
     label: "Priority",
