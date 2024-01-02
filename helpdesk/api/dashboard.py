@@ -43,15 +43,16 @@ def ticket_statuses():
 def avg_first_response_time():
 	average_resolution_time = float(0.0)
 	thirty_days_ago = datetime.now() - timedelta(days=30)
-	filters = {
-		"creation": [">=", thirty_days_ago.strftime("%Y-%m-%d")],
-		"resolution_time": ["not like", ""],
-	}
+	QBTicket = frappe.qb.DocType("HD Ticket")
 
-	ticket_list = frappe.get_list(
-		"HD Ticket",
-		fields=["name", "resolution_time"],
-		filters=filters,
+	ticket_list = (
+		frappe
+		.qb
+		.from_(QBTicket)
+		.select("creation", "resolution_time")
+		.where(QBTicket.creation >= thirty_days_ago.strftime("%Y-%m-%d"))
+		.where(QBTicket.resolution_time.isnotnull())
+		.run(as_dict=True)
 	)
 
 	for ticket in ticket_list:
