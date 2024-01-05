@@ -301,8 +301,8 @@ class HDServiceLevelAgreement(Document):
 			today_workday = workdays[today_weekday]
 			is_today = getdate(start_at) == getdate(end_at)
 			if not is_today:
-				working_start = today_workday.start_time
-				working_end = today_workday.end_time
+				working_start = to_timedelta(today_workday.start_time)
+				working_end = to_timedelta(today_workday.end_time)
 				working_time = time_diff_in_seconds(working_start, working_end)
 				time_took += working_time
 				start_at = getdate(add_to_date(start_at, days=1, as_datetime=True))

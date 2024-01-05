@@ -107,5 +107,8 @@ const setValue = createResource({
       iconClasses: "text-green-600",
     });
   },
+  onError: (e) => {
+    useError()(e);
+  },
 });
 </script>

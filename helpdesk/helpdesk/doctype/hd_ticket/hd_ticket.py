@@ -22,7 +22,7 @@ from helpdesk.helpdesk.utils.email import (
 	default_ticket_outgoing_email_account,
 )
 from helpdesk.utils import capture_event, get_customer, is_agent, publish_event
-
+from helpdesk.helpdesk.doctype.hd_ticket_template.api import get_fields as get_template_fields
 from ..hd_notification.utils import clear as clear_notifications
 from ..hd_service_level_agreement.utils import get_sla
 
@@ -171,7 +171,7 @@ class HDTicket(Document):
 		self.set_sla()
 
 	def validate(self):
-		self.validate_feedback()
+		self.validate_template_required_fields()
 		self.validate_ticket_type()
 
 	def before_save(self):
@@ -247,6 +247,17 @@ class HDTicket(Document):
 		frappe.throw(
 			_("Ticket must be resolved with a feedback"), frappe.ValidationError
 		)
+
+	def validate_template_required_fields(self):
+		if self.template and self.status == "Resolved":
+			template_fields = get_template_fields(self.template, 'DocField')
+			required_fields = [f for f in template_fields if f.required == 1]
+			current_doc_dict = self.as_dict()
+			for r in required_fields:
+				if not current_doc_dict[r.fieldname]:
+					frappe.throw(
+						_("Ticket must be resolved with {}".format(r.label))
+					)
 
 	def check_update_perms(self):
 		if self.is_new() or is_agent():

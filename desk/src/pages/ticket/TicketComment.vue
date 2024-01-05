@@ -40,6 +40,7 @@ import { createToast } from "@/utils";
 import { useAuthStore } from "@/stores/auth";
 import { UserInfo } from "@/types";
 import { UserAvatar } from "@/components";
+import { useError } from "@/composables/error";
 
 interface P {
   content: string;
@@ -95,6 +96,9 @@ const deleteComment = createResource({
       icon: "check",
       iconClasses: "text-green-500",
     });
+  },
+  onError: (e) => {
+    useError()(e);
   },
 });
 </script>
