@@ -12,6 +12,17 @@
       </div>
       <slot name="top-right" v-bind="{ message: content }" />
     </div>
+    <div v-if="cc">
+      <span class="inline-flex flex-wrap items-center gap-1">
+        <span class="mr-2 text-xs text-gray-500">CC:</span>
+          <Button
+            v-for="i in cc.split(',').filter(Boolean)"
+            :key="i"
+            :label="i"
+            @click=""
+          />
+      </span>
+    </div>
     <!-- eslint-disable-next-line vue/no-v-html -->
     <span class="prose-f" v-html="sanitize(content)"></span>
     <div class="flex flex-wrap gap-2">

@@ -12,6 +12,7 @@ from frappe.query_builder import Case, DocType, Order
 from pypika.functions import Count
 from pypika.queries import Query
 from pypika.terms import Criterion
+from frappe.core.doctype.communication.communication import Communication
 
 from helpdesk.consts import DEFAULT_TICKET_PRIORITY, DEFAULT_TICKET_TYPE
 from helpdesk.helpdesk.doctype.hd_ticket_activity.hd_ticket_activity import (
@@ -472,8 +473,8 @@ class HDTicket(Document):
 		last_communication = self.get_last_communication()
 
 		if last_communication:
-			cc = cc or last_communication.cc
-			bcc = bcc or last_communication.bcc
+			cc = ", ".join(Communication._get_emails_list("{}, {}".format(cc or "", last_communication.cc or ""), True))
+			bcc = ", ".join(Communication._get_emails_list("{}, {}".format(bcc or "", last_communication.bcc or ""), True))
 
 		if recipients == "Administrator":
 			admin_email = frappe.get_value("User", "Administrator", "email")
