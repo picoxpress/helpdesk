@@ -272,6 +272,21 @@ def add_system_preset_filters():
 			"filters": [],
 		}
 	)
+	preset_filters.append(
+		{
+			"doctype": "HD Preset Filter",
+			"title": "My Tickets",
+			"reference_doctype": "HD Ticket",
+			"filters": [
+				{
+					"label": "Assigned To",
+					"fieldname": "_assign",
+					"filter_type": "is",
+					"value": "@me",
+				}
+			],
+		}
+	)
 	for preset in preset_filters:
 		preset_filter_doc = frappe.get_doc(preset)
 		preset_filter_doc.insert()
