@@ -211,7 +211,7 @@ def make_a_call(from_number, to_number, caller_id, custom_field=None):
             "To": to_number,
             "CallerId": caller_id,
             "Record": "true",
-            "StatusCallback": f"{get_site_url(frappe.local.site)}/api/method/helpdesk.helpdesk.integrations.exotel_integration.handle_outbound_summary",
+            "StatusCallback": f"https://{frappe.local.site}/api/method/helpdesk.helpdesk.integrations.exotel_integration.handle_outbound_summary",
             "StatusCallbackEvents[0]": "terminal",
             "CustomField": custom_field,
             "StatusCallbackContentType": "application/json"
