@@ -189,7 +189,7 @@ def make_a_call_from_call_log(call_log_id, custom_field=None):
     call_log = frappe.get_doc("Call Log", call_log_id, ignore_permissions=True)
     if call_log:
         response = make_a_call(call_log.get('from'), call_log.to, "08068452182", custom_field)
-        if (response['Call']):
+        if 'Call' in response:
             return {
                 'callSuccessful': True,
                 'errorMessage': None
