@@ -218,6 +218,16 @@ def make_a_call_for_ticket(ticket_id, custom_field=None):
                     'callSuccessful': False,
                     'errorMessage': response
                 }
+        else:
+            return {
+                'callSuccessful': False,
+                'errorMessage': 'No Agent or Call Log Found'
+            }
+    else:
+        return {
+            'callSuccessful': False,
+            'errorMessage': 'No Ticket found with id: {}'.format(ticket_id)
+        }
 
 
 @frappe.whitelist(allow_guest=True)
