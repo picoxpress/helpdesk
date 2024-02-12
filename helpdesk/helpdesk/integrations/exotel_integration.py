@@ -188,7 +188,7 @@ def get_call_status(call_id):
 def make_a_call_from_call_log(call_log_id, custom_field=None):
     call_log = frappe.get_doc("Call Log", call_log_id, ignore_permissions=True)
     if call_log:
-        response = make_a_call(call_log.get('from'), call_log.to, "08068452182", custom_field)
+        response = make_a_call(call_log.to, call_log.get('from'), "08068452182", custom_field)
         if 'Call' in response:
             return {
                 'callSuccessful': True,
@@ -199,6 +199,25 @@ def make_a_call_from_call_log(call_log_id, custom_field=None):
                 'callSuccessful': False,
                 'errorMessage': response
             }
+
+@frappe.whitelist(allow_guest=True)
+def make_a_call_for_ticket(ticket_id, custom_field=None):
+    ticket = frappe.get_doc("HD Ticket", ticket_id)
+    if ticket:
+        call_log = frappe.get_doc("Call Log", ticket.call_log, ignore_permissions=True)
+        assigned_agent = ticket.get_assigned_agent()
+        if assigned_agent and call_log:
+            response = make_a_call(assigned_agent.cell_number, call_log.get('from'), "08068452182", custom_field)
+            if 'Call' in response:
+                return {
+                    'callSuccessful': True,
+                    'errorMessage': None
+                }
+            else:
+                return {
+                    'callSuccessful': False,
+                    'errorMessage': response
+                }
 
 
 @frappe.whitelist(allow_guest=True)
