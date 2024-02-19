@@ -191,6 +191,9 @@ class HDTicket(Document):
 	def set_ticket_type(self):
 		if self.ticket_type:
 			return
+		if self.email_account:
+			self.ticket_type = 'Email'
+			return
 		settings = frappe.get_doc("HD Settings")
 		ticket_type = settings.default_ticket_type or DEFAULT_TICKET_TYPE
 		self.ticket_type = ticket_type
