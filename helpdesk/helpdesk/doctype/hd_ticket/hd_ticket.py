@@ -402,7 +402,7 @@ class HDTicket(Document):
 
 	def set_ticket_source(self):
 		if self.email_account:
-			self.ticket_type = 'Email'
+			self.ticket_source = 'Email'
 
 	@frappe.whitelist()
 	def get_last_communication(self):
