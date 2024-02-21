@@ -170,6 +170,7 @@ class HDTicket(Document):
 		self.set_feedback_values()
 		self.apply_escalation_rule()
 		self.set_sla()
+		self.set_ticket_source()
 
 	def validate(self):
 		self.validate_template_required_fields()
@@ -190,9 +191,6 @@ class HDTicket(Document):
 
 	def set_ticket_type(self):
 		if self.ticket_type:
-			return
-		if self.email_account:
-			self.ticket_type = 'Email'
 			return
 		settings = frappe.get_doc("HD Settings")
 		ticket_type = settings.default_ticket_type or DEFAULT_TICKET_TYPE
@@ -401,6 +399,10 @@ class HDTicket(Document):
 			agent_group = "Customer Support"  # Current we only have telephony for them.
 		if agent_group:
 			self.agent_group = agent_group
+
+	def set_ticket_source(self):
+		if self.email_account:
+			self.ticket_type = 'Email'
 
 	@frappe.whitelist()
 	def get_last_communication(self):
