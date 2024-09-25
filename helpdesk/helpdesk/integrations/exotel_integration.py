@@ -160,8 +160,17 @@ def create_helpdesk_ticket(call_log, subject, call_payload, description=""):
     ticket.save(ignore_permissions=True)
     if (len(agents) > 0):
         ticket.assign_agent(agents[0].user, True)
+    else:
+        ticket.assign_agent(get_prospective_agent_for_ticket(ticket), True)
     frappe.db.commit()
     return ticket
+
+def get_prospective_agent_for_ticket(ticket):
+    assignment_rule = frappe.get_doc(
+        "Assignment Rule",
+        frappe.get_doc("HD Team", ticket.agent_group).assignment_rule,
+    )
+    return assignment_rule.get_user()
 
 def unresolved_ticket_with_subject_exists(subject):
     eligible_tickets = frappe.db.get_all(
@@ -204,7 +213,7 @@ def make_a_call_from_call_log(call_log_id, custom_field=None):
 def make_a_call_for_ticket(ticket_id, custom_field=None):
     ticket = frappe.get_doc("HD Ticket", ticket_id)
     if ticket:
-        call_log = frappe.get_doc("Call Log", ticket.call_log, ignore_permissions=True)
+        call_log = xfrappe.get_doc("Call Log", ticket.call_log, ignore_permissions=True)
         assigned_agent = ticket.get_assigned_agent()
         if assigned_agent and call_log:
             response = make_a_call(assigned_agent.cell_number, call_log.get('from'), "08068452182", custom_field)
