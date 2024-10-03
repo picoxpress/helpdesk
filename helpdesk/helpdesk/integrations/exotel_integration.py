@@ -213,7 +213,7 @@ def make_a_call_from_call_log(call_log_id, custom_field=None):
 def make_a_call_for_ticket(ticket_id, custom_field=None):
     ticket = frappe.get_doc("HD Ticket", ticket_id)
     if ticket:
-        call_log = xfrappe.get_doc("Call Log", ticket.call_log, ignore_permissions=True)
+        call_log = frappe.get_doc("Call Log", ticket.call_log, ignore_permissions=True)
         assigned_agent = ticket.get_assigned_agent()
         if assigned_agent and call_log:
             response = make_a_call(assigned_agent.cell_number, call_log.get('from'), "08068452182", custom_field)
