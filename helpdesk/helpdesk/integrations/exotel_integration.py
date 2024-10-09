@@ -170,7 +170,7 @@ def get_prospective_agent_for_ticket(ticket):
         "Assignment Rule",
         frappe.get_doc("HD Team", ticket.agent_group).assignment_rule,
     )
-    return assignment_rule.get_user()
+    return assignment_rule.get_user(ticket)
 
 def unresolved_ticket_with_subject_exists(subject):
     eligible_tickets = frappe.db.get_all(
